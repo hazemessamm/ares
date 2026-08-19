@@ -16,13 +16,13 @@ dependencies = [
   "einops",
   "numpy",
   "tokenizers",
-  "torch",
-  "transformers",
+  "torch==2.9.0",
+  "transformers==5.15.1",
 ]
 
 [project.optional-dependencies]
 data = [
-  "datasets",
+  "datasets==4.4.2",
   "huggingface-hub",
 ]
 training = [
@@ -35,19 +35,21 @@ training = [
   "wandb",
 ]
 evaluation = [
+  "accelerate==1.10.1",
   "matplotlib",
   "pandas",
   "scikit-learn",
   "scipy",
 ]
 xla = [
-  "torch-xla",
+  "torch-xla[tpu]==2.9.0",
 ]
 dev = [
   "pytest",
 ]
 full = [
-  "datasets",
+  "accelerate==1.10.1",
+  "datasets==4.4.2",
   "fsspec",
   "gcsfs",
   "huggingface-hub",
@@ -58,7 +60,7 @@ full = [
   "requests",
   "scikit-learn",
   "scipy",
-  "torch-xla",
+  "torch-xla[tpu]==2.9.0",
   "tqdm",
   "wandb",
 ]
