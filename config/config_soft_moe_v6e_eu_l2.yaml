@@ -1,0 +1,116 @@
+# ─── Model ────────────────────────────────────────────────────────────────────
+model:
+  embed_dim: 1024
+  pad_token_id: 0
+  num_heads: 16
+  num_kv_heads: 8
+  num_layers: 20
+  ff_dim: 4096
+  activation: silu
+  gated: true
+  attn_dropout: 0.0
+  bias: false
+  attn_capping_value: null
+  logits_capping_value: null
+  norm_type: rms
+  ff_norm_type: null
+  qk_norm: false
+  rope_frequency: 10000
+  rope_scale: 1.0
+
+  # Mixture of Experts (expert_choice | soft_router | null for dense)
+  moe_type: soft_router
+  moe_after_num_layers: 10            # layers before this index use dense FFN
+  num_experts: 32                     # both
+  moe_noise_level: 0.05               # both — jitter noise scale for routing
+  expert_capacity_factor: 2.0        # expert_choice only
+  moe_normalize: true               # soft_router only
+  moe_num_slots: 64                  # soft_router only
+  moe_interleaved: false
+  gradient_checkpointing: true
+
+# ─── Dataset ──────────────────────────────────────────────────────────────────
+dataset:
+  repo_id: agemagician/uniref50_09012025
+  column_name: text
+  buffer_size: 10000
+  total_sequences: 68346946
+  seed: 42
+  packed: true
+  use_precomputed_bins: true
+  bins_repo_id: hazemessam/bins-dataset
+
+# ─── Truncation ───────────────────────────────────────────────────────────────
+truncation:
+  max_length: 1024
+
+# ─── Masking / MLM ────────────────────────────────────────────────────────────
+masking:
+  mlm_probability: [0.15, 0.20, 0.25, 0.30]
+  masking_probability: [0.80, 0.80, 0.80, 0.80]
+  mutation_probability: [0.10, 0.10, 0.10, 0.10]
+
+  # Scheduler for MLM probability sampling weights.
+  # Gradually shifts which (mlm, masking, mutation) triplet is favoured.
+  # Set type to null to disable (uniform sampling).
+  scheduler:
+    type: staged_linear            # linear | staged_linear | ema | null
+    initial_weights: [1.0, 0.0, 0.0, 0.0]
+    final_weights:   [1.0, 1.0, 1.0, 1.0]
+    warmup_ratio: 0.05       # linear | staged_linear only (fraction of total training steps)
+    beta: 0.999             # ema only
+    multiplier: 1.0         # ema only
+
+# ───---- Optimizer ────────────────────────────────────────────────────────────────
+# Supported: adamw, soap
+optimizer:
+  name: adamw
+  lr: 3e-4
+  weight_decay: 0.01
+  betas: [0.9, 0.95]
+  eps: 1e-8
+
+# ─── Training / XLA ──────────────────────────────────────────────────────────
+training:
+  epochs: 30
+  per_device_train_batch_size: 4
+  per_device_eval_batch_size: 4
+  gradient_accumulation_steps: 1
+  warmup_ratio: 0.05
+  max_grad_norm: 1.0
+  seed: 42
+
+  # XLA / Distributed
+  distributed: true
+  autocast: true
+  verify_bf16: false
+  prime_optimizer: false
+
+  # Logging
+  logging_steps: 100
+  logging_dir: logs
+
+  # Checkpointing
+  save_strategy: steps        # steps | epoch
+  save_steps: 1000
+  checkpoint_dir: gs://your-bucket/checkpoints-32-l2-norm
+  checkpoint_keep_last_k: 2
+  resume_from_checkpoint: true
+  evaluate_after_resume: false
+
+  # Evaluation
+  eval_every: 1000
+  debug_validation_rendezvous_every: 0
+
+  # DataLoader
+  num_workers: 0
+  prefetch_factor: null
+
+  # Wandb
+  # wandb_project: ares-soft-moe-v6e-eu
+  # run_name: ares-training-soft-moe-v6e-eu-interleaved
+  wandb_project: ares-soft-moe-v6e-eu-l2-norm
+  run_name: ares-training-soft-moe-v6e-eu-l2-norm
+
+  # Debug (run one validation pass before training)
+  debug_mode: false

@@ -1,0 +1,67 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "ares"
+version = "0.1.0"
+description = "Protein language modeling components for the Ares project."
+readme = "README.md"
+requires-python = ">=3.10"
+license = { text = "MIT" }
+authors = [
+  { name = "Hazem Essam" },
+]
+dependencies = [
+  "einops",
+  "numpy",
+  "tokenizers",
+  "torch",
+  "transformers",
+]
+
+[project.optional-dependencies]
+data = [
+  "datasets",
+  "huggingface-hub",
+]
+training = [
+  "fsspec",
+  "gcsfs",
+  "hydra-core",
+  "omegaconf",
+  "requests",
+  "tqdm",
+  "wandb",
+]
+evaluation = [
+  "matplotlib",
+  "pandas",
+  "scikit-learn",
+  "scipy",
+]
+xla = [
+  "torch-xla",
+]
+dev = [
+  "pytest",
+]
+full = [
+  "datasets",
+  "fsspec",
+  "gcsfs",
+  "huggingface-hub",
+  "hydra-core",
+  "matplotlib",
+  "omegaconf",
+  "pandas",
+  "requests",
+  "scikit-learn",
+  "scipy",
+  "torch-xla",
+  "tqdm",
+  "wandb",
+]
+
+[tool.setuptools.packages.find]
+include = ["ares*"]

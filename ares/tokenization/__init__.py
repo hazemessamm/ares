@@ -1,0 +1,1 @@
+from ares.tokenization.protein_tokenizer import AresProteinTokenizer

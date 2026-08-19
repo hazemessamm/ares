@@ -1,0 +1,68 @@
+ares_ec:
+  checkpoint: HazemLab/ares-expert-choice-4b-interleaved-150K
+  output_dir: outputs/ares_ec/
+
+ares_sm_l2:
+  checkpoint: HazemLab/ares-softmoe-4b-l2-consecutive-150K
+  output_dir: outputs/ares_sm_l2/
+
+ares_sm_scaled:
+  checkpoint: hazemessam/ares-softmoe-4b-l2-consecutive-225K
+  output_dir: outputs/ares_sm_scaled/
+
+ares_sm:
+  checkpoint: HazemLab/ares-softmoe-4b-consecutive-150K
+  output_dir: outputs/ares_sm/
+
+esm2_3b:
+  checkpoint: facebook/esm2_t36_3B_UR50D
+  output_dir: outputs/esm2_3b/
+
+esm2_650m:
+  checkpoint: facebook/esm2_t33_650M_UR50D
+  output_dir: outputs/esm2_650m/
+
+ankh_large:
+  checkpoint: ElnaggarLab/ankh-large
+  output_dir: outputs/ankh_large/
+
+ankh_base:
+  checkpoint: ElnaggarLab/ankh-base
+  output_dir: outputs/ankh_base/
+
+
+shared_modeling_config:
+  intermediate_dim: 768
+  pooler: avg
+  mlp: true
+  freeze: true
+
+
+model:
+  name: null
+  family: null
+
+task:
+  name: null # modified in bash script
+  type: regression
+
+training:
+  num_train_epochs: 30
+  per_device_train_batch_size: 32
+  per_device_eval_batch_size: 32
+  gradient_accumulation_steps: 1
+  eval_accumulation_steps: 16
+  warmup_steps: 1000
+  learning_rate: 1e-3
+  weight_decay: 0.0
+  logging_steps: 1
+  eval_strategy: epoch
+  save_strategy: epoch
+  save_total_limit: 1
+  metric_for_best_model: eval_validation_spearman
+  greater_is_better: true
+  seed: 7
+  remove_unused_columns: false
+  load_best_model_at_end: true
+  report_to: wandb
+  max_grad_norm: 1.0
