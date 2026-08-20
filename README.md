@@ -5,6 +5,7 @@
 [![Paper](https://img.shields.io/badge/OpenReview-gq0R7xiPjg-8c1b13)](https://openreview.net/forum?id=gq0R7xiPjg)
 [![Venue](https://img.shields.io/badge/GenBio%20%40%20ICML%202026-Spotlight-f5a623)](https://openreview.net/forum?id=gq0R7xiPjg)
 [![License](https://img.shields.io/badge/License-MIT-blue)](LICENSE)
+[![Models](https://img.shields.io/badge/%F0%9F%A4%97%20Hugging%20Face-HazemLab-ffcc4d)](https://huggingface.co/HazemLab)
 
 > Spotlight at the **GenBio Workshop, ICML 2026**. [OpenReview](https://openreview.net/forum?id=gq0R7xiPjg)
 
@@ -89,6 +90,26 @@ batch = tokenizer(["MKTAYIAKQRQISFVKSHFSRQ"], return_tensors="pt")
 outputs = model(**batch)
 print(outputs.logits.shape)
 ```
+
+### Pretrained checkpoints
+
+All six checkpoints are on the Hub at
+[**huggingface.co/HazemLab**](https://huggingface.co/HazemLab):
+
+| Checkpoint | Routing | MoE placement | Steps | ProteinGym |
+|---|---|---|---|---|
+| [`ares-softmoe-4b-consecutive-150K`](https://huggingface.co/HazemLab/ares-softmoe-4b-consecutive-150K) | Soft | Consecutive | 150,000 | **0.341** |
+| [`ares-softmoe-4b-l2-consecutive-225K`](https://huggingface.co/HazemLab/ares-softmoe-4b-l2-consecutive-225K) | Soft + L2 | Consecutive | 225,000 | **0.341** |
+| [`ares-softmoe-4b-l2-consecutive-150K`](https://huggingface.co/HazemLab/ares-softmoe-4b-l2-consecutive-150K) | Soft + L2 | Consecutive | 150,000 | **0.319** |
+| [`ares-softmoe-4b-consecutive`](https://huggingface.co/HazemLab/ares-softmoe-4b-consecutive) | Soft | Consecutive | not recorded | not evaluated |
+| [`ares-expert-choice-4b-interleaved-150K`](https://huggingface.co/HazemLab/ares-expert-choice-4b-interleaved-150K) | Expert choice | Interleaved | 150,000 | **0.126** |
+| [`ares-ec-moe-4b-86k`](https://huggingface.co/HazemLab/ares-ec-moe-4b-86k) | Expert choice | Consecutive | 86,000 | not evaluated |
+
+ProteinGym is the Fisher-*z* aggregated Spearman over 217 DMS substitution assays; per-assay
+breakdowns for every row are in
+[`evaluation/proteingym_results/`](evaluation/proteingym_results/). Start with
+`ares-softmoe-4b-consecutive-150K` unless you have a reason not to: it and the 225K L2 run
+are effectively tied at the top, and it is the simpler of the two.
 
 ### Loading a pretrained model from the Hub
 
