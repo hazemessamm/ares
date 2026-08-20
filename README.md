@@ -92,18 +92,31 @@ print(outputs.logits.shape)
 
 ### Loading a pretrained model from the Hub
 
-Importing `ares` registers the model with the HuggingFace `Auto*` classes, so
-checkpoints resolve through the normal API, with no `trust_remote_code` needed:
+Load checkpoints with `Ares.from_pretrained` and build the tokenizer directly.
+No `trust_remote_code` is needed:
 
 ```python
-import ares  # registers AresConfig / Ares / AresProteinTokenizer
-from transformers import AutoModelForMaskedLM, AutoTokenizer
+import torch
+from ares import Ares, AresProteinTokenizer
 
-model = AutoModelForMaskedLM.from_pretrained("HazemLab/ares-softmoe-4b-consecutive-150K")
-tokenizer = AutoTokenizer.from_pretrained("HazemLab/ares-softmoe-4b-consecutive-150K")
+model = Ares.from_pretrained(
+    "HazemLab/ares-softmoe-4b-consecutive-150K",
+    dtype=torch.bfloat16,
+).eval()
+tokenizer = AresProteinTokenizer()
+
+batch = tokenizer(["MKTAYIAKQRQISFVKSHFSRQ"], return_tensors="pt")
+with torch.no_grad():
+    outputs = model(**batch)
+
+print(outputs.logits.shape)          # (batch, length, vocab)
+print(outputs.hidden_states[0].shape)  # (batch, length, embed_dim)
 ```
 
-`AutoModel`, `AutoConfig`, and `Ares.from_pretrained` all work the same way.
+`AresProteinTokenizer` builds its vocabulary in code, so it needs no download
+and is identical across every checkpoint. Weights are stored in float32
+(~17 GB); pass `dtype=torch.bfloat16` unless you specifically need float32.
+
 The `ares` package must be installed. Checkpoints carry an `auto_map`, but the
 bundled modules import from `ares`, so `trust_remote_code=True` is not a
 substitute for installing it.

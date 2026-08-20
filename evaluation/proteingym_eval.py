@@ -708,7 +708,7 @@ if __name__ == "__main__":
     # Wrapping each forward in torch.autocast(bf16) on top of an already-bf16
     # MoE model wastes memory because autocast promotes some intermediates
     # back to fp32. Just let the model run natively in its loaded dtype.
-    model = Ares.from_pretrained(ckpt, device_map="cuda:0", torch_dtype=torch.bfloat16)
+    model = Ares.from_pretrained(ckpt, device_map="cuda:0", dtype=torch.bfloat16)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     results = run_proteingym_evaluation(
         model=model,
