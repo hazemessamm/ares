@@ -204,6 +204,29 @@ All 253 tests pass. The suite covers the model and encoder layers, both
 routers, rotary embeddings, masking schedules, sequence packing, and the
 `NaNObserver` debugging hook.
 
+## Contributing
+
+Issues and pull requests are welcome.
+
+The model code in [`ares/models/`](ares/models/) is device-agnostic — only the training
+pipeline is TPU-specific. **A GPU training path is the single most useful thing someone
+could add.** The XLA coupling is confined to
+[`ares/pipelines/checkpoint.py`](ares/pipelines/checkpoint.py),
+[`xla_sharding.py`](ares/pipelines/xla_sharding.py),
+[`metrics.py`](ares/pipelines/metrics.py),
+[`utils.py`](ares/pipelines/utils.py), and the two `train_*.py` entrypoints; a CUDA/FSDP
+path would slot in beside the `xla` extra in `pyproject.toml` without touching the model.
+`ares.pipelines` already resolves its imports lazily, so a `torch-xla`-free install works
+today. Please open an issue first so we can agree on the interface.
+
+Other things that would help: additional downstream evaluations, a faithful expert-choice
+router (see the note under [Architecture](#architecture)), and fixes to the MoE analysis
+tooling.
+
+Keep `pytest tests/` green — in particular
+[`tests/test_packing_correctness.py`](tests/test_packing_correctness.py), which asserts
+that packed training matches unpacked inference.
+
 ## Citation
 
 ```bibtex
@@ -222,3 +245,5 @@ routers, rotary embeddings, masking schedules, sequence packing, and the
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+Affiliation: Proteinea
