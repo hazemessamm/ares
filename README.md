@@ -260,6 +260,12 @@ Keep `pytest tests/` green — in particular
 [`tests/test_packing_correctness.py`](tests/test_packing_correctness.py), which asserts
 that packed training matches unpacked inference.
 
+## Acknowledgments
+
+We gratefully acknowledge Google's TPU Research Cloud (TRC) program for providing the Cloud
+TPU resources that made the training of Ares possible. We thank Dr. Ahmed Saleh Mansour for
+his valuable feedback and careful review of the manuscript.
+
 ## Citation
 
 ```bibtex
