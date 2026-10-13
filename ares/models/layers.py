@@ -102,6 +102,8 @@ class FeedForward(nn.Module):
         if self.gated:
             gates = self.g(embeddings)
             up = up * self.activation(gates)
+        else:
+            up = self.activation(up)
 
         down = self.w2(up)
         return down
