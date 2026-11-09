@@ -180,6 +180,11 @@ class SoftRouter(nn.Module):
             logits, dim=1, dtype=torch.float32
         ).to(logits.dtype)
         combine_weights = softmax(logits, dim=(2, 3))
+        if padding_mask is not None:
+            # Padding tokens have all logits masked, so the softmax above
+            # gives them uniform weights. Zero them so padding positions
+            # receive no expert output. Valid tokens are unaffected.
+            combine_weights = combine_weights.masked_fill(mask, 0.0)
         # was used when doing analysis on the dispatch and combine weights.
         # Not a very clean way of analyzing the weights.
         # self.dispatch_weights_ = dispatch_weights.detach()
